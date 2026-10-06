@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gewichtstracker</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="dark-mode">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="icon-export" viewBox="0 0 36 36">
+        <path d="M8 25v5h20v-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/>
+        <path d="M18 5v18m-6-6 6 6 6-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/>
+      </symbol>
+      <symbol id="icon-import" viewBox="0 0 36 36">
+        <path d="M8 25v5h20v-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/>
+        <path d="M18 23V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/>
+      </symbol>
+      <symbol id="icon-moon" viewBox="0 0 36 36">
+        <path d="M25.5 27.8A12.1 12.1 0 0 1 12.3 8.6 12.2 12.2 0 1 0 25.5 27.8Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"/>
+        <path d="M23.7 7.7 25 5l1.3 2.7L29 9l-2.7 1.3L25 13l-1.3-2.7L21 9Z" fill="currentColor"/>
+      </symbol>
+      <symbol id="icon-sun" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="6.2" fill="none" stroke="currentColor" stroke-width="2.4"/>
+        <path d="M18 4v4M18 28v4M4 18h4M28 18h4M8.1 8.1l2.8 2.8M25.1 25.1l2.8 2.8M27.9 8.1l-2.8 2.8M10.9 25.1l-2.8 2.8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.4"/>
+      </symbol>
+    </svg>
+
+    <main class="app-shell">
+      <section class="header-band">
+        <div>
+          <h1 class="accent-heading">Gewichtstracker</h1>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button" id="themeToggle" type="button" title="Darkmode umschalten" aria-label="Darkmode umschalten">
+            <svg class="action-icon theme-icon" aria-hidden="true" focusable="false">
+              <use id="themeIcon" href="#icon-moon"></use>
+            </svg>
+          </button>
+          <button class="icon-button" id="openImportModal" type="button" title="Importieren" aria-label="Importieren">
+            <svg class="action-icon" aria-hidden="true" focusable="false">
+              <use href="#icon-import"></use>
+            </svg>
+          </button>
+          <button class="icon-button" id="openExportModal" type="button" title="Exportieren" aria-label="Exportieren">
+            <svg class="action-icon" aria-hidden="true" focusable="false">
+              <use href="#icon-export"></use>
+            </svg>
+          </button>
+          <input class="file-input" id="importCsv" type="file" accept=".csv,text/csv">
+          <input class="file-input" id="importJson" type="file" accept=".json,application/json">
+        </div>
+      </section>
+
+      <section class="entry-band">
+        <form class="entry-form" id="entryForm">
+          <label>
+            <span>Datum</span>
+            <input id="entryDate" name="date" type="date" required>
+          </label>
+          <label>
+            <span>Gewicht</span>
+            <div class="unit-input">
+              <input id="entryWeight" name="weight" type="number" inputmode="decimal" min="20" max="350" step="0.1" required>
+              <span>kg</span>
+            </div>
+          </label>
+          <button class="primary-button" type="submit">Eintragen</button>
+        </form>
+      </section>
+
+      <section class="metrics-grid" aria-label="Aktuelle Kennzahlen">
+        <article class="metric">
+          <span>Aktuelles Gewicht</span>
+          <strong id="currentWeight">-</strong>
+        </article>
+        <article class="metric">
+          <span>7-Tage-Gewicht</span>
+          <strong id="averageWeight">-</strong>
+        </article>
+        <article class="metric">
+          <span>BMI</span>
+          <strong id="currentBmi">-</strong>
+        </article>
+        <article class="metric">
+          <span>7-Tage-BMI</span>
+          <strong id="averageBmi">-</strong>
+        </article>
+      </section>
+
+      <section class="chart-section">
+        <div class="section-heading">
+          <div>
+            <h2 class="accent-heading">Gewicht, BMI und Durchschnitt</h2>
+          </div>
+          <div class="legend">
+            <label class="series-toggle">
+              <input id="toggleWeight" type="checkbox" checked>
+              <span><i class="legend-dot weight"></i>Gewicht</span>
+            </label>
+            <label class="series-toggle">
+              <input id="toggleAverage" type="checkbox">
+              <span><i class="legend-dot average"></i>7-Tage-Gewicht</span>
+            </label>
+            <label class="series-toggle">
+              <input id="toggleBmi" type="checkbox">
+              <span><i class="legend-dot bmi"></i>BMI</span>
+            </label>
+            <label class="series-toggle">
+              <input id="toggleAverageBmi" type="checkbox">
+              <span><i class="legend-dot average-bmi"></i>7-Tage-BMI</span>
+            </label>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="weightChart" aria-label="Gewichtsverlauf" role="img"></canvas>
+          <div class="chart-tooltip" id="chartTooltip" hidden></div>
+          <p class="empty-state" id="emptyChart">Noch keine Eintr&auml;ge vorhanden.</p>
+        </div>
+      </section>
+
+      <section class="table-section">
+        <div class="section-heading">
+          <div>
+            <h2 class="accent-heading">Historie</h2>
+          </div>
+          <button class="ghost-button" id="clearAll" type="button">Alle l&ouml;schen</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Gewicht</th>
+                <th>7-Tage-Gewicht</th>
+                <th>BMI</th>
+                <th>7-Tage-BMI</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="entriesBody"></tbody>
+          </table>
+        </div>
+        <button class="more-button" id="showMore" type="button" hidden>Weitere</button>
+      </section>
+    </main>
+
+    <div class="format-modal" id="formatModal" role="dialog" aria-modal="true" aria-labelledby="formatModalTitle" hidden>
+      <div class="format-dialog">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow" id="formatModalEyebrow">Format</p>
+            <h2 id="formatModalTitle">Format w&auml;hlen</h2>
+          </div>
+          <button class="icon-button" id="closeFormatModal" type="button" title="Schlie&szlig;en" aria-label="Schlie&szlig;en">x</button>
+        </div>
+        <div class="format-options">
+          <button class="format-option" id="chooseCsv" type="button">
+            <strong>CSV</strong>
+            <span>Tabellenformat</span>
+          </button>
+          <button class="format-option" id="chooseJson" type="button">
+            <strong>JSON</strong>
+            <span>Strukturierte Daten</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="historical-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
